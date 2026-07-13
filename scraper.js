@@ -14,7 +14,7 @@ const VIDTUBE = "https://vidtube.site";
 const VIDWISH = "https://vidwish.live";
 const ANIZIP = "https://api.ani.zip/mappings";
 const MAPPER = "https://mapper.mewcdn.online/api/mal";
-const JIKAN = "https//api.jikan.moe/v4";
+const JIKAN = "https://api.jikan.moe/v4";
 const SPOOF_REF = "https://hianimes.re/";
 const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36";
 
