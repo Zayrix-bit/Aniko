@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aniko - Stream Anime</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --accent: #8b5cf6;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.15) 0px, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            background-attachment: fixed;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(to right, #60a5fa, #c084fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .header p {
+            color: var(--text-muted);
+        }
+
+        .glass-container {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            width: 100%;
+            max-width: 900px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: fadeInUp 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .input-group label {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+            font-weight: 600;
+        }
+
+        input, select {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            color: var(--text-main);
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            outline: none;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+        }
+
+        button {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            height: 46px; /* Match input height */
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .player-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+            border-radius: 1rem;
+            overflow: hidden;
+            border: 1px solid var(--glass-border);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .player-wrapper.active {
+            display: block;
+            opacity: 1;
+        }
+
+        .player-wrapper iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .status-msg {
+            text-align: center;
+            font-size: 0.9rem;
+            height: 20px;
+            color: #fbbf24;
+        }
+
+        /* Loading Spinner */
+        .loader {
+            display: none;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        .btn-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Aniko Stream</h1>
+        <p>Enter an AniList ID and instantly start watching.</p>
+    </div>
+
+    <div class="glass-container">
+        <div class="controls">
+            <div class="input-group">
+                <label for="anilistId">AniList ID</label>
+                <input type="number" id="anilistId" placeholder="e.g. 194219" value="194219">
+            </div>
+            
+            <div class="input-group" style="flex: 0.5; min-width: 100px;">
+                <label for="epNum">Episode</label>
+                <input type="number" id="epNum" placeholder="1" value="1" min="1">
+            </div>
+
+            <div class="input-group" style="flex: 0.5; min-width: 100px;">
+                <label for="audio">Audio</label>
+                <select id="audio">
+                    <option value="sub">Sub</option>
+                    <option value="dub">Dub</option>
+                </select>
+            </div>
+
+            <button id="playBtn" onclick="loadPlayer()">
+                <div class="btn-content">
+                    <span id="btnText">Play Episode</span>
+                    <div class="loader" id="loader"></div>
+                </div>
+            </button>
+        </div>
+
+        <div class="status-msg" id="statusMsg"></div>
+
+        <div class="player-wrapper" id="playerWrapper">
+            <!-- iframe will be injected here -->
+            <iframe id="videoPlayer" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:3000/api/watch';
+
+        async function loadPlayer() {
+            const anilistId = document.getElementById('anilistId').value.trim();
+            const epNum = document.getElementById('epNum').value.trim();
+            const audio = document.getElementById('audio').value;
+            
+            const btn = document.getElementById('playBtn');
+            const btnText = document.getElementById('btnText');
+            const loader = document.getElementById('loader');
+            const statusMsg = document.getElementById('statusMsg');
+            const playerWrapper = document.getElementById('playerWrapper');
+            const videoPlayer = document.getElementById('videoPlayer');
+
+            if (!anilistId || !epNum) {
+                statusMsg.textContent = "Please enter both AniList ID and Episode Number.";
+                statusMsg.style.color = "#ef4444";
+                return;
+            }
+
+            // UI Loading state
+            btn.disabled = true;
+            btnText.style.display = 'none';
+            loader.style.display = 'block';
+            statusMsg.textContent = `Finding Episode ${epNum}... Please wait.`;
+            statusMsg.style.color = "#fbbf24";
+            
+            try {
+                // Fetch streams from local API
+                const res = await fetch(`${API_URL}/${anilistId}/${audio}/${epNum}`);
+                if (!res.ok) throw new Error("API Error: Make sure your server is running.");
+                
+                const data = await res.json();
+                const key = audio === 'sub' ? 'ssub' : 'sdub';
+                
+                if (data.error) throw new Error(data.error);
+
+                if (data[key] && data[key].streams && data[key].streams.length > 0) {
+                    // Find an embed stream
+                    const embedStream = data[key].streams.find(s => s.type === 'embed') || data[key].streams[0];
+                    
+                    if (embedStream && embedStream.url) {
+                        videoPlayer.src = embedStream.url;
+                        playerWrapper.classList.add('active');
+                        statusMsg.textContent = `Playing ${embedStream.server} source!`;
+                        statusMsg.style.color = "#10b981"; // success green
+                    } else {
+                        throw new Error("No embed URL found in the streams.");
+                    }
+                } else {
+                    throw new Error(`Episode not found or no streams available for ${audio}.`);
+                }
+
+            } catch (err) {
+                statusMsg.textContent = err.message;
+                statusMsg.style.color = "#ef4444";
+                playerWrapper.classList.remove('active');
+                videoPlayer.src = "";
+            } finally {
+                // Reset UI state
+                btn.disabled = false;
+                btnText.style.display = 'block';
+                loader.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>
